@@ -12,22 +12,21 @@ def validUTF8(data):
     mask2 = 1 << 6
 
     for num in data:
-        byte = num & 0xFF
-
+        mask_byte = 1 << 7
         if num_bytes == 0:
-            if (byte & mask1) == 0:
+            while mask_byte & i:
+                num_bytes += 1
+                mask_byte = mask_byte >> 1
+
+            if num_bytes == 0:
                 continue
-            elif (byte & (mask1 >> 1)) == mask1:
-                num_bytes = 1
-            elif (byte & (mask1 >> 2)) == (mask1 >> 1):
-                num_bytes = 2
-            elif (byte & (mask1 >> 3)) == (mask1 >> 2):
-                num_bytes = 3
-            else:
+            if num_bytes == 1 or num_bytes > 4:
                 return False
         else:
-            if not (byte & mask1 and not (byte & mask2)):
+            if not (i & mask1 and not (i & mask2)):
                 return False
         num_bytes -= 1
 
-    return num_bytes == 0
+    if num_bytes == 0:
+        return True
+    return False
