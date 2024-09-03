@@ -8,20 +8,25 @@ def validUTF8(data):
     """
     num_bytes = 0
 
+    mask1 = 1 << 7
+    mask2 = 1 << 6
+
     for num in data:
         byte = num & 0xFF
 
         if num_bytes == 0:
-            if (byte >> 5) == 0b110:
+            if (byte & mask1) == 0:
+                continue
+            elif (byte & (mask1 >> 1)) == mask1:
                 num_bytes = 1
-            elif (byte >> 4) == 0b1110:
+            elif (byte & (mask1 >> 2)) == (mask1 >> 1):
                 num_bytes = 2
-            elif (byte >> 3) == 0b11110:
+            elif (byte & (mask1 >> 3)) == (mask1 >> 2):
                 num_bytes = 3
-            elif (byte >> 7):
+            else:
                 return False
         else:
-            if (byte >> 6) != 0b10:
+            if not (byte & mask1 and not (byte & mask2)):
                 return False
         num_bytes -= 1
 
