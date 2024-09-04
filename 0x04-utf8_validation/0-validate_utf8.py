@@ -3,31 +3,31 @@
 
 
 def validUTF8(data):
+    """ validUTF8 function
     """
-    valid_utf8 function
-    """
-    num_bytes = 0
 
-    mask1 = 1 << 7
-    mask2 = 1 << 6
+    byte_count = 0
 
-    for num in data:
-        byte = num & 0xFF
+    first_bit_mask = 1 << 7
+    second_bit_mask = 1 << 6
 
-        if num_bytes == 0:
-            if (byte & mask1) == 0:
+    for value in data:
+        leading_bit_mask = 1 << 7
+
+        if byte_count == 0:
+            while leading_bit_mask & value:
+                byte_count += 1
+                leading_bit_mask >>= 1
+
+            if byte_count == 0:
                 continue
-            elif (byte & (mask1 >> 1)) == mask1:
-                num_bytes = 1
-            elif (byte & (mask1 >> 2)) == (mask1 >> 1):
-                num_bytes = 2
-            elif (byte & (mask1 >> 3)) == (mask1 >> 2):
-                num_bytes = 3
-            else:
+
+            if byte_count == 1 or byte_count > 4:
                 return False
         else:
-            if not (byte & mask1 and not (byte & mask2)):
+            if not (value & first_bit_mask and not (value & second_bit_mask)):
                 return False
-        num_bytes -= 1
 
-    return num_bytes == 0
+        byte_count -= 1
+
+    return byte_count == 0
